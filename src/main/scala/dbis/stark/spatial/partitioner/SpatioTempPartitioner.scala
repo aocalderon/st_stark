@@ -6,6 +6,7 @@ import dbis.stark.spatial.{Cell, NPoint, NRectRange, StarkUtils}
 import dbis.stark.{Instant, Interval, STObject, TemporalExpression}
 import org.apache.spark.rdd.RDD
 import spire.ClassTag
+import java.nio.file.Paths
 
 object SpatioTempPartitioner {
   def apply[G <: STObject : ClassTag, T : ClassTag] (
@@ -157,6 +158,19 @@ class SpatioTempPartitioner[G <: STObject : ClassTag] private (
       val tids = intervals.mkString("->")
       
       s"$wkt\t$tids"
+    }
+    GridPartitioner.writeToFile(cubes, fName)
+  }
+
+  def savePartitionsById(filename: String): Unit = {
+    val fName = Paths.get(filename)
+    val cubes = partitions.flatMap{ cell =>
+      val (envelope, intervals) = getSTBounds(cell.id)
+      val wkt = envelope.wkt
+      intervals.map{ tid =>
+          s"$wkt\t$tid\t${cell.id}"
+        
+        }
     }
     GridPartitioner.writeToFile(cubes, fName)
   }

@@ -19,12 +19,13 @@ spark-warehouse
 
 /target/*
 /project/*
-#/.classpath
+/.classpath
 /.project/*
 /.settings/*
 /.bloop/*
 /.metals/*
-
+/.bsp/*
+/.vscode/*
 
 #/target/*
 #/project/*

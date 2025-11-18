@@ -3,6 +3,7 @@ package puj
 import dbis.stark._
 import org.apache.spark.SpatialRDD._
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.rdd.RDD
 import org.apache.spark.serializer.KryoSerializer
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -76,9 +77,21 @@ object Main {
            
             val STPartitioner = SpatioTempPartitioner(pointsRDD, cellSize = 100.0, spatial_capacity = 100, temporal_capacity = 20)
             println(s"ST partitions: ${STPartitioner.numPartitions}")
-            STPartitioner.printPartitions("/tmp/st.wkt")
+            STPartitioner.printPartitions("/tmp/grid.wkt")
+            STPartitioner.savePartitionsById("/tmp/st3d.wkt")
 
-            val partionedPoints = pointsRDD.partitionBy(STPartitioner)
+            val partitionedPoints: RDD[(STObject, Int)] = pointsRDD.partitionBy(STPartitioner)
+            val P: Array[String] = partitionedPoints.mapPartitionsWithIndex{ (idx, points) =>
+                points.map{ case(point, _) =>
+                        val tid = point.getStart.get.value
+                        val wkt = point.wkt
+                        s"$wkt\t$tid\t$idx"
+                    }
+            }.collect()
+            printToFile("/tmp/PP.wkt") { p =>
+                P.foreach(p.println)
+            }
+            
 
             //buffer.close()
         } catch {

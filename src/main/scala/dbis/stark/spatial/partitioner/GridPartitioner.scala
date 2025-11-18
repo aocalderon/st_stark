@@ -13,8 +13,6 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
-
-
 trait SpatialPartitioner extends Partitioner {
 
   private final lazy val empties = Array.fill(numPartitions)(true)
@@ -39,9 +37,6 @@ trait SpatialPartitioner extends Partitioner {
 
   def printPartitions(fName: String): Unit =
     printPartitions(Paths.get(fName))
-
-
-
 }
 
 /**
@@ -82,8 +77,6 @@ abstract class GridPartitioner(val partitions: Array[Cell],
 
   def partitionBounds(idx: Int): Cell
   def partitionExtent(idx: Int): NRectRange
-
-
 }
 
 /**
