@@ -167,9 +167,9 @@ class SpatioTempPartitioner[G <: STObject : ClassTag] private (
     val cubes = partitions.flatMap{ cell =>
       val (envelope, intervals) = getSTBounds(cell.id)
       val wkt = envelope.wkt
-      intervals.map{ tid =>
-          s"$wkt\t$tid\t${cell.id}"
-        
+      intervals.zip(intervals.tail).map{ case(t_current, t_next) =>
+          val height = t_next - t_current
+          s"$wkt\t$t_current\t$height\t${cell.id}"
         }
     }
     GridPartitioner.writeToFile(cubes, fName)
